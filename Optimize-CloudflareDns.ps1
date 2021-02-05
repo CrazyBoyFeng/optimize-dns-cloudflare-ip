@@ -34,19 +34,18 @@ function Get-Token { #登录
 }
 "@
     try {
-        $response = Invoke-WebRequest -Uri "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true" -ContentType "application/json;charset=utf8" -Method POST -Body $body
+        $response = Invoke-WebRequest -Uri "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true" -ContentType "application/json" -Method POST -Body $body
         $token = $response.Headers["X-Subject-Token"]
         $script:headers = @{"X-Auth-Token" = $token }
     }
     catch {
-        $status = $_.Exception.Response.StatusCode.value__
-        "Auth HTTP $status"
+        #$status = $_.Exception.Response.StatusCode.value__
+        "Auth HTTP: $_.Exception"
         Exit -1
     }
 }
 
-function Search-RecordsetId {
-    #查找ip对应的记录集id
+function Search-RecordsetId { #查找ip对应的记录集id
     Get-Token
     $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip" -Headers $headers
     If ($response.metadata.total_count = 0) {

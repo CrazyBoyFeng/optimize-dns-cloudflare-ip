@@ -69,7 +69,7 @@ function Test-IPv4 {
 function Test-IPv6 {
     Search-RecordsetId
     Copy-Item ipv6.txt ipv6.tmp
-    Add-Content -Path ipv6.tmp "`r`n$ip/64"
+    Add-Content -Path ipv6.tmp "`r`n$ip/128"
     "`r`n"
     &".\CloudflareST.exe" -p 0 -ipv6 -f ipv6.tmp
     "`r`n"
@@ -122,4 +122,5 @@ function Get-IP {
 }
 
 Get-IP
-pause
+Pause
+Exit

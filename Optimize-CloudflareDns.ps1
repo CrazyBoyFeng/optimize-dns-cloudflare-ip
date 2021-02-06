@@ -4,8 +4,10 @@ $zone_id = "域名ID（控制台可查）"
 $account = "用户账户"
 $password = "用户密码"
 
-function Get-Token { #登录
-    If ($headers) { #非空
+function Get-Token {
+    #登录
+    If ($headers) {
+        #非空
         Return
     }
     $body = @"
@@ -36,32 +38,40 @@ function Get-Token { #登录
     try {
         $response = Invoke-WebRequest -Uri "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true" -ContentType "application/json" -Method POST -Body $body
         $token = $response.Headers["X-Subject-Token"]
-        $script:headers = @{"X-Auth-Token" = $token }
+        If ($token) {
+            $script:headers = @{"X-Auth-Token" = $token }
+        }
     }
     catch {
-        #$status = $_.Exception.Response.StatusCode.value__
-        "Auth HTTP: $_.Exception"
-        Exit -1
+        "`r`nAuth: $_.Exception"
+        Exit 11
+    }
+    If ($headers) {
+        "`r`nAuth as $account successful"
+    }
+    Else {
+        "`r`nAuth as $account failed"
+        Exit 12
     }
 }
 
-function Search-RecordsetId { #查找ip对应的记录集id
+function Search-RecordsetId {
+    #查找ip对应的记录集id
     Get-Token
     $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip" -Headers $headers
-    If ($response.metadata.total_count = 0) {
-        "No valid recordsets for $ip in $domain. If you update DNS just now, it will take a while to take effect."
-        Exit -1
-    }
     $script:recordset_id = $response.recordsets[0].id
+    If (!$recordset_id) {
+        #空
+        "`r`nNo valid recordsets for $ip in $domain. If it has been updated just now, please wait until it takes effect."
+        Exit 21
+    }
 }
 
 function Test-IPv4 {
     Search-RecordsetId
     Copy-Item ip.txt ip.tmp
     Add-Content -Path ip.tmp -Value "`r`n$ip/32"
-    "`r`n"
     &".\CloudflareST.exe" -sl 0.1 -p 0 -f ip.tmp
-    "`r`n"
     Remove-Item ip.tmp
 }
 
@@ -69,9 +79,7 @@ function Test-IPv6 {
     Search-RecordsetId
     Copy-Item ipv6.txt ipv6.tmp
     Add-Content -Path ipv6.tmp "`r`n$ip/128"
-    "`r`n"
     &".\CloudflareST.exe" -p 0 -ipv6 -f ipv6.tmp
-    "`r`n"
     Remove-Item ipv6.tmp
 }
 
@@ -82,16 +90,25 @@ function Update-IP {
     "records": ["$best"]
 }
 "@
-    Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id" -Headers $headers -Method PUT -Body $body
+    try {
+        $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id" -Headers $headers -Method PUT -Body $body
+        $response | Out-File -FilePath recordset.json
+        "$response"
+    }
+    catch {
+        "`r`nRecordset: $_.Exception"
+        Exit 41
+    }
 }
 
 function Get-Best {
+    "`r`n"
     $script:best = (Import-CSV result.csv)[0].psobject.properties.value[0]
     If (!$best) {
-        "Can not get the best Cloudflare IP"
-        Exit -1
+        "`r`nCan not get the best Cloudflare IP"
+        Exit 31
     }
-    "Best Cloudflare IP: $best"
+    "`r`nBest Cloudflare IP: $best"
     If ("$ip" -eq "$best") {
         Exit
     }
@@ -104,7 +121,7 @@ function Get-IP {
     $script:ip = $($ping.Send($domain).Address).IPAddressToString
     If (!$ip) {
         "Can not get the IP of $domain"
-        Exit -1
+        Exit 1
     }
     "Current IP: $ip"
     If ($ip.Contains(".")) {
@@ -114,12 +131,11 @@ function Get-IP {
         Test-IPv6
     }
     Else {
-        "Error"
-        Exit -1
+        Exit 2
     }
     Get-Best
 }
 
+Set-Location -Path $PSScriptRoot
 Get-IP
-Pause
 Exit

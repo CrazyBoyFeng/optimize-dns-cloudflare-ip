@@ -12,19 +12,20 @@ exit
 
 function get_ip() {
     echo "Domain name: $domain"
-    ip=$(ping -c 1 google.com | awk '{ print $1 }')
+    ip=`ping -c 1 $domain | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ]; then
         echo "Can not get the IP of $domain"
         exit 1
     fi
     echo "Current IP: $ip"
-    if [[ $ip == *"."* ]]; then
-        test_ipv4
-    elif [[ $ip == *":"* ]]; then
-        test_ipv6
-    else
-        exit 2
-    fi
+    case $ip in 
+    *"."*)
+        test_ipv4;;
+    *":"*)
+        test_ipv6;;
+    *)
+        exit 2;;
+    esac
     get_best
 }
 
@@ -49,7 +50,7 @@ function test_ipv6() {
 }
 
 function get_token() {   #登录
-    if [ $header ]; then #非空
+    if [ $header ] ; then #非空
         return
     fi
     echo
@@ -59,14 +60,14 @@ function get_token() {   #登录
     local response = `wget -O /dev/null -qS --body-data "$body" --header "Content-Type: application/json" --method POST --no-check-certificate https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true`
     #local token = `echo $response | grep 'X-Subject-Token \w*'`
     local token = `echo "$response" | grep -o 'X-Subject-Token: \w*' | grep -o '\w*$'`
-    if [ $token ]; then #非空
+    if [ $token ] ; then #非空
         echo "Auth as $account successful"
     else
         echo "Auth as $account failed"
-        Exit 11
+        exit 11
     fi
     #header = ${token/Subject/Auth}
-    header="X-Auth-Token: $token"
+    header = "X-Auth-Token: $token"
 }
 
 function search_recordset_id { #查找ip对应的记录集id
@@ -85,7 +86,7 @@ function search_recordset_id { #查找ip对应的记录集id
 
 function get_best {
     echo
-    best = `cat result.csv | awk -v FS=',' '{print $1}'| head -2 | tail -n 1`
+    best = `sed -n 2p result.csv | grep -o '^[^,]*'`
     if [ ! $best ] ; then
         echo "Can not get the best Cloudflare IP"
         exit 31

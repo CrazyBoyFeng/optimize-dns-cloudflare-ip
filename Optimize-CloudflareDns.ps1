@@ -8,8 +8,7 @@ Set-Location -Path $PSScriptRoot
 
 function Get-IP {
     "Domain name: $domain"
-    $ping = New-Object System.Net.NetworkInformation.Ping
-    $script:ip = $($ping.Send($domain).Address).IPAddressToString
+    $script:ip = [System.Net.Dns]::GetHostAddresses($domain)[0].IPAddressToString
     If (!$ip) {
         "Can not get the IP of $domain"
         Exit 1
@@ -78,7 +77,7 @@ function Get-Token {
 }
 "@
     try {
-        $response = Invoke-WebRequest -Uri "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true" -ContentType "application/json" -Method POST -Body $body
+        $response = Invoke-WebRequest -UseBasicParsing -Uri "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true" -ContentType "application/json" -Method POST -Body $body
         $token = $response.Headers["X-Subject-Token"]
         If ($token) {
             $script:headers = @{"X-Auth-Token" = $token }

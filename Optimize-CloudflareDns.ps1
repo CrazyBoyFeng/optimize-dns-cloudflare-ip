@@ -6,9 +6,6 @@ $password = "用户密码"
 
 Set-Location -Path $PSScriptRoot
 
-Get-IP
-Exit
-
 function Get-IP {
     "Domain name: $domain"
     $ping = New-Object System.Net.NetworkInformation.Ping
@@ -142,3 +139,6 @@ function Update-IP {
         Exit 41
     }
 }
+
+Get-IP
+Exit

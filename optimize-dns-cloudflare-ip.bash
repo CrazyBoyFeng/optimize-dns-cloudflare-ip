@@ -86,7 +86,8 @@ function search_recordset_id { #查找ip对应的记录集id
 
 function get_best {
     echo
-    best = `sed -n 2p result.csv | grep -o '^[^,]*'`
+    #best = `sed -n 2p result.csv | grep -o '^[^,]*'`
+    best = `sed -n 2p result.csv | cut -d, -f1`
     if [ ! $best ] ; then
         echo "Can not get the best Cloudflare IP"
         exit 31

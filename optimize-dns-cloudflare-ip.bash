@@ -49,7 +49,7 @@ function test_ipv6() {
     rm -f ipv6.tmp
 }
 
-function get_token() {   #登录
+function get_token() { #登录
     if [ $header ] ; then #非空
         return
     fi
@@ -58,15 +58,15 @@ function get_token() {   #登录
     #local response = `curl -fiks -X POST -o /dev/null -H "Content-Type: application/json" -d "$body" https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true -D -`
     #有些系统默认没装curl，所以用wget替代
     local response = `wget -O /dev/null -qS --body-data "$body" --header "Content-Type: application/json" --method POST --no-check-certificate https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true`
-    #local token = `echo $response | grep 'X-Subject-Token \w*'`
-    local token = `echo "$response" | grep -o 'X-Subject-Token: \w*' | grep -o '\w*$'`
+    local token = `echo $response | grep 'X-Subject-Token: \w*'` #截取所在行
     if [ $token ] ; then #非空
         echo "Auth as $account successful"
     else
         echo "Auth as $account failed"
         exit 11
     fi
-    #header = ${token/Subject/Auth}
+    #header = ${token/Subject/Auth} #bash only
+    local token = `echo "$token" | grep -o '\w*$'` #截取 header value
     header = "X-Auth-Token: $token"
 }
 

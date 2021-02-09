@@ -1,6 +1,6 @@
-Rem PS1 è„šæœ¬å¯åŠ¨å™¨
-Rem PS1 æ–‡ä»¶ä¸èƒ½ç›´æŽ¥è¿è¡Œï¼Œæ‰€ä»¥éœ€è¦è¿™ä¸ªå¯åŠ¨å™¨ã€‚
-Rem æœ¬æ¥æˆ‘æ˜¯æƒ³ç›´æŽ¥å†™æˆ Batch æ‰¹å¤„ç†çš„ï¼Œç»“æžœå‘çŽ° CMD ä¸æ”¯æŒ 2 KB ä»¥ä¸Šçš„å˜é‡ï¼Œä¹Ÿéš¾ä»¥å¤„ç† JSON å’Œ CSV æ•°æ®ï¼ŒäºŽæ˜¯åªå¥½å†™æˆ PowerShell è„šæœ¬ã€‚
+Rem PS1 ½Å±¾Æô¶¯Æ÷
+Rem PS1 ÎÄ¼þ²»ÄÜÖ±½ÓÔËÐÐ£¬ËùÒÔÐèÒªÕâ¸öÆô¶¯Æ÷¡£
+Rem ±¾À´ÎÒÊÇÏëÖ±½ÓÐ´³É Batch Åú´¦ÀíµÄ£¬½á¹û·¢ÏÖ CMD ²»Ö§³Ö 2 KB ÒÔÉÏµÄ±äÁ¿£¬Ò²ÄÑÒÔ´¦Àí JSON ºÍ CSV Êý¾Ý£¬ÓÚÊÇÖ»ºÃÐ´³É PowerShell ½Å±¾¡£
 
 @Echo Off
 SetLocal EnableDelayedExpansion

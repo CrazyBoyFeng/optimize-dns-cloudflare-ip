@@ -1,8 +1,8 @@
-#è¯·å…ˆå»åä¸ºäº‘è§£æåå°å¢åŠ ä¸€æ¡Aè®°å½•æˆ–AAAAè®°å½•ã€‚
-$domain = "ä½ çš„åŸŸåï¼ˆå¯ä»¥æ˜¯å­åŸŸåï¼‰"
-$zone_id = "åŸŸåIDï¼ˆæ§åˆ¶å°å¯æŸ¥ï¼‰"
-$account = "ç”¨æˆ·è´¦æˆ·"
-$password = "ç”¨æˆ·å¯†ç "
+#ÇëÏÈÈ¥»ªÎªÔÆ½âÎöºóÌ¨Ôö¼ÓÒ»ÌõA¼ÇÂ¼»òAAAA¼ÇÂ¼¡£
+$domain = "ÄãµÄÓòÃû£¨¿ÉÒÔÊÇ×ÓÓòÃû£©"
+$zone_id = "ÓòÃûID£¨¿ØÖÆÌ¨¿É²é£©"
+$account = "ÓÃ»§ÕË»§"
+$password = "ÓÃ»§ÃÜÂë"
 
 Set-Location -Path $PSScriptRoot
 
@@ -46,9 +46,9 @@ function Test-IPv6 {
 }
 
 function Get-Token {
-    #ç™»å½•
+    #µÇÂ¼
     If ($headers) {
-        #éç©º
+        #·Ç¿Õ
         Return
     }
     $body = @"
@@ -61,16 +61,16 @@ function Get-Token {
             "password": {
                 "user": {
                     "domain": {
-                        "name": "$account"//IAMç”¨æˆ·æ‰€å±è´¦å·å
+                        "name": "$account"//IAMÓÃ»§ËùÊôÕËºÅÃû
                     },
-                    "name": "$account",//IAMç”¨æˆ·å
-                    "password": "$password"//IAMç”¨æˆ·å¯†ç 
+                    "name": "$account",//IAMÓÃ»§Ãû
+                    "password": "$password"//IAMÓÃ»§ÃÜÂë
                 }
             }
         },
         "scope": {
             "domain": {
-                "name": "$account"//IAMç”¨æˆ·æ‰€å±è´¦å·å
+                "name": "$account"//IAMÓÃ»§ËùÊôÕËºÅÃû
             }
         }
     }
@@ -97,12 +97,12 @@ function Get-Token {
 }
 
 function Search-RecordsetId {
-    #æŸ¥æ‰¾ipå¯¹åº”çš„è®°å½•é›†id
+    #²éÕÒip¶ÔÓ¦µÄ¼ÇÂ¼¼¯id
     Get-Token
     $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip" -Headers $headers
     $script:recordset_id = $response.recordsets[0].id
     If (!$recordset_id) {
-        #ç©º
+        #¿Õ
         "`r`nNo valid recordsets with $ip for $domain. If it has been updated just now, please wait until it takes effect."
         Exit 21
     }

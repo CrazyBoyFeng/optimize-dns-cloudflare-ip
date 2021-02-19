@@ -26,7 +26,6 @@ function Get-IP {
     Get-Best
 }
 
-
 function Test-IPv4 {
     Search-RecordsetId
     Copy-Item ip.txt ip.tmp

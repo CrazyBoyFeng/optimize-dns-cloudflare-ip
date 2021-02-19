@@ -7,10 +7,10 @@ password = "用户密码"
 
 cd `dirname $BASH_SOURCE`
 
-get-ip
+get_ip
 exit
 
-function get_ip() {
+function get_ip {
     echo "Domain name: $domain"
     ip=`ping -c 1 $domain | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ]; then
@@ -29,7 +29,7 @@ function get_ip() {
     get_best
 }
 
-function test_ipv4() {
+function test_ipv4 {
     search_recordset_id
     cp -f ip.txt ip.tmp
     echo "" >> ip.tmp
@@ -39,7 +39,7 @@ function test_ipv4() {
     rm -f ip.tmp
 }
 
-function test_ipv6() {
+function test_ipv6 {
     search_recordset_id
     cp -f ipv6.txt ipv6.tmp
     echo "" >> ipv6.tmp
@@ -49,7 +49,7 @@ function test_ipv6() {
     rm -f ipv6.tmp
 }
 
-function get_token() { #登录
+function get_token { #登录
     if [ $header ] ; then #非空
         return
     fi

@@ -55,8 +55,6 @@ function get_token { #登录
     fi
     echo
     local body = "{\"auth\":{\"identity\":{\"methods\":[\"password\"],\"password\":{\"user\":{\"domain\":{\"name\":\"$account\"//IAM用户所属账号名},\"name\":\"$account\",//IAM用户名\"password\":\"$password\"//IAM用户密码}}},\"scope\":{\"domain\":{\"name\":\"$account\"//IAM用户所属账号名}}}}"
-    #local response = `curl -fiks -X POST -o /dev/null -H "Content-Type: application/json" -d "$body" https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true -D -`
-    #有些系统默认没装curl，所以用wget替代
     local response = `wget -O /dev/null -qS --body-data "$body" --header "Content-Type: application/json" --method POST --no-check-certificate https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true`
     local token = `echo $response | grep -o 'X-Subject-Token: \w*'` #截取 header
     if [ $token ] ; then #非空
@@ -72,7 +70,6 @@ function get_token { #登录
 
 function search_recordset_id { #查找ip对应的记录集id
     get_token
-    #local response=`curl -fiks -H "$headers" https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip`
     local response = `wget -O- -q --header "$header" --no-check-certificate https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip`
     #recordset_id = ${recordset_id##*\"recordsets\":\[\{\"id\":\"} #bash only
     #recordset_id = ${recordset_id%%\"*} #bash only
@@ -102,7 +99,6 @@ function get_best {
 function update_ip {
     get_token
     local body = "{\"records\":[\"$best\"]}"
-    #local response = `curl -fiks -X PUT -H "$headers" -d "$body" https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id`
     local response = `wget -O- -q --header "$header" --method PUT --no-check-certificate https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id`
     if [ $response ] ; then
         rm -f recordset.json

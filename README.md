@@ -6,9 +6,9 @@
 _提示：华为云解析可以分地区按运营商线路解析。如果你使用该功能，请注意不同线路的 IP 不能重复。_
 
 ### 类 Unix
-下载 `optimize-dns-cloudflare-ip.bash` 至 `CloudflareST` 所在目录。  
-修改 `optimize-dns-cloudflare-ip.bash`，填写：域名 `domain`、域名 ID `zone_id`、账户 `account`、密码  `password`。  
-执行 `optimize-dns-cloudflare-ip.bash`。
+下载 `optimize-dns-cloudflare-ip-wget.bash` 或 `optimize-dns-cloudflare-ip-curl.bash` 至 `CloudflareST` 所在目录。  
+修改 `optimize-dns-cloudflare-ip*.bash`，填写：域名 `domain`、域名 ID `zone_id`、账户 `account`、密码  `password`。  
+执行 `optimize-dns-cloudflare-ip*.bash`。
 
 如需自动定时执行，请查阅 `cron` 相关知识。
 

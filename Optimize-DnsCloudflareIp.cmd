@@ -6,7 +6,7 @@ SetLocal EnableDelayedExpansion
 Title %~n0
 CD /D "%~dp0"
 
-If "%1"=="start" (
+If "%1"=="Start" (
     Start /Min Cmd /C "%~dpnx0 NoPause"
     Exit
 )

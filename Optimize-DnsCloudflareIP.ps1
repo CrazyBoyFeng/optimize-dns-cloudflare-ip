@@ -1,4 +1,4 @@
-Param([switch]$NoPause,[switch]$NoPauseError)
+Param([switch]$ExitEnd,[switch]$ExitError)
 #请先去华为云解析后台增加一条A记录或AAAA记录。
 $domain = "你的域名（可以是子域名）"
 $zone_id = "域名ID（控制台可查）"
@@ -7,12 +7,9 @@ $password = "用户密码"
 
 Set-Location -Path $PSScriptRoot
 
-function Error {
-    Param ($Message,$Code)
-    If ($Message) {
-        Write-Error $Message -ErrorId $Code
-    }
-    If (!$NoPause -And !$NoPauseError) {
+function Exit-Error {
+    Param ($Code)
+    If (!$ExitError) {
         Pause
     }
     Exit $Code
@@ -23,7 +20,8 @@ function Get-IP {
     Write-Host "Domain name: $Domain"
     $ip = [System.Net.Dns]::GetHostAddresses($Domain)[0].IPAddressToString
     If (!$ip) {
-        Error "Can not get the IP of $Domain" 1
+        Write-Error "Can not get the IP of $Domain"
+        Exit-Error 1
     }
     Write-Host "Current IP: $ip"
     Return $ip
@@ -31,7 +29,6 @@ function Get-IP {
 
 function Get-Token {
     Param($Account,$Password)
-    #登录
     $body = @"
 {
     "auth": {
@@ -61,15 +58,16 @@ function Get-Token {
         $response = Invoke-WebRequest -UseBasicParsing -Uri "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true" -ContentType "application/json" -Method POST -Body $body
         $token = $response.Headers["X-Subject-Token"]
         If (!$token) {
-            Error "Auth as $Account failed" 11
+            Write-Error "Auth as $Account failed"
+            Exit-Error 11
         }
         Write-Host "Auth as $Account successful"
         Return $token
     } Catch {
-        Error "Auth: $_.Exception" 12
+        Write-Error $_.Exception.Message
+        Exit-Error 12
     }
 }
-
 
 function Get-Headers {
     Param($Account,$Password)
@@ -82,12 +80,11 @@ function Get-Headers {
 
 function Search-RecordsetId {
     Param($Headers,$Domain,$IP)
-    #查找ip对应的记录集id
     $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/recordsets?name=$Domain&records=$IP" -Headers $Headers
     $recordset_id = $response.recordsets[0].id
     If (!$recordset_id) {
-        #空
-        Error "No valid recordsets with $IP for $Domain. If it has been updated just now, please wait until it takes effect." 21
+        Write-Error "No valid recordsets with $IP for $Domain. If it has been updated just now, please wait until it takes effect."
+        Exit-Error 21
     }
     Return $recordset_id
 }
@@ -108,8 +105,8 @@ function Test-IPv6 {
     Remove-Item ip.tmp
 }
 
-function Quit {
-    If (!$NoPause) {
+function Exit-End {
+    If (!$ExitEnd) {
         Pause
     }
     Exit
@@ -119,11 +116,12 @@ function Get-Best {
     Param($IP)
     $best = (Import-CSV result.csv)[0].psobject.properties.value[0]
     If (!$best) {
-        Error "Can not get the best Cloudflare IP" 31
+        Write-Error "Can not get the best Cloudflare IP"
+        Exit-Error 31
     }
     Write-Host "Best Cloudflare IP: $best"
     If ("$IP" -Eq "$best") {
-        Quit
+        Exit-End
     }
     Return $best
 }
@@ -138,11 +136,12 @@ function Update-IP {
     try {
         $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/zones/$ZoneId/recordsets/$RecordsetId" -Headers $Headers -Method PUT -Body $body
         Write-Output $response | Out-File -FilePath recordset.txt
-        Write-Host $response
+        $response
     } catch {
-        Error "Recordset: $_.Exception" 41
+        Write-Error $_.Exception.Message
+        Exit-Error 41
     }
-    Quit
+    Exit-End
 }
 
 $ip = Get-IP $domain

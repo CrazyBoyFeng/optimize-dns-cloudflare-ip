@@ -13,10 +13,16 @@ _提示：华为云解析可以分地区按运营商线路解析。如果你使�
 如需自动定时执行，请查阅 `cron` 相关知识。
 
 ### Windows
-下载 `Optimize-DnsCloudflareIp.cmd` 和 `Optimize-DnsCloudflareIp.ps1` 至 `CloudflareST.exe` 所在目录。  
+下载 `Optimize-DnsCloudflareIp.ps1` 和 `*.lnk` 至 `CloudflareST.exe` 所在目录。  
 修改 `Optimize-DnsCloudflareIp.ps1`，填写：域名 `domain`、域名 ID `zone_id`、账户 `account`、密码  `password`。  
-执行 `Optimize-DnsCloudflareIp.cmd`。最小化启动需添加 `Start` 参数执行 `Optimize-DnsCloudflareIp.cmd Start`。
-
-注意：脚本结束后等待用户确认才会退出。若 `Start` 参数启动，则脚本仅在出现错误时等待用户确认，正常结束时直接退出。
+执行快捷方式文件。其中：
+* `Optimize-DnsCloudflareIP.lnk` 正常模式，脚本结束后会暂停。
+* `Optimize-DnsCloudflareIP Minimized.lnk` 最小化模式，脚本仅在错误时暂停。
+* `Optimize-DnsCloudflareIP Hidden.lnk`，隐藏模式且脚本会在结束后退出。可通过退出码判断执行结果。
 
 如需自动定时执行，请查阅任务计划相关知识。
+
+#### 参数说明
+* `-ExitEnd` 脚本正常结束时立即退出。隐藏模式使用了此参数。
+* `-ExitError` 脚本发生错误时立即退出。最小化模式和隐藏模式使用了此参数。
+如需修改参数，可直接修改快捷方式属性。

@@ -15,7 +15,7 @@ If /I "%1"=="Minimized" (
     Shift /1
     PowerShell -ExecutionPolicy Unrestricted -NoProfile -WindowStyle Hidden -File %~dpn0.ps1 -ExitEnd -ExitError %*
 ) Else (
-    PowerShell -ExecutionPolicy Unrestricted -NoProfile -WindowStyle Minimized -File %~dpn0.ps1 %*
+    PowerShell -ExecutionPolicy Unrestricted -NoProfile -File %~dpn0.ps1 %*
 )
 Set ExitCode=!ErrorLevel!
 Echo.

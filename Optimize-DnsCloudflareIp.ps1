@@ -151,8 +151,8 @@ function Update-IP {
     catch {
         Error "Recordset: $_.Exception" 41
     }
+    ""
+    Quit
 }
 
 Get-IP
-""
-Quit

@@ -1,3 +1,4 @@
+param([switch]$NoPause,[switch]$NoPauseError)
 #请先去华为云解析后台增加一条A记录或AAAA记录。
 $domain = "你的域名（可以是子域名）"
 $zone_id = "域名ID（控制台可查）"
@@ -6,14 +7,32 @@ $password = "用户密码"
 
 Set-Location -Path $PSScriptRoot
 
+function Quit {
+    If (!$NoPause) {
+        Pause
+    }
+    Exit
+}
+
+function Error {
+    param ($Message,$Code)
+    If ($Message) {
+        Write-Error $Message
+    }
+    If (!$NoPause -And !$NoPauseError) {
+        Pause
+    }
+    Exit $Code
+}
+
 function Get-IP {
     "Domain name: $domain"
     $script:ip = [System.Net.Dns]::GetHostAddresses($domain)[0].IPAddressToString
     If (!$ip) {
-        "Can not get the IP of $domain"
-        Exit 1
+        Error "Can not get the IP of $domain" 1
     }
     "Current IP: $ip"
+    ""
     If ($ip.Contains(".")) {
         Test-IPv4
     }
@@ -21,8 +40,9 @@ function Get-IP {
         Test-IPv6
     }
     Else {
-        Exit 2
+        Error "IP is valid" 2
     }
+    ""
     Get-Best
 }
 
@@ -30,7 +50,6 @@ function Test-IPv4 {
     Search-RecordsetId
     Copy-Item ip.txt ip.tmp
     Add-Content -Path ip.tmp -Value "`r`n$ip/32"
-    ""
     &".\CloudflareST.exe" -tl 500 -sl 0.1 -p 0 -f ip.tmp
     Remove-Item ip.tmp
 }
@@ -39,7 +58,6 @@ function Test-IPv6 {
     Search-RecordsetId
     Copy-Item ipv6.txt ipv6.tmp
     Add-Content -Path ipv6.tmp "`r`n$ip/128"
-    ""
     &".\CloudflareST.exe" -p 0 -ipv6 -f ipv6.tmp
     Remove-Item ipv6.tmp
 }
@@ -83,16 +101,15 @@ function Get-Token {
         }
     }
     catch {
-        "`r`nAuth: $_.Exception"
-        Exit 11
+        Error "Auth: $_.Exception" 11
     }
     If ($headers) {
-        "`r`nAuth as $account successful"
+        "Auth as $account successful"
     }
     Else {
-        "`r`nAuth as $account failed"
-        Exit 12
+        Error "Auth as $account failed" 12
     }
+    ""
 }
 
 function Search-RecordsetId {
@@ -102,21 +119,20 @@ function Search-RecordsetId {
     $script:recordset_id = $response.recordsets[0].id
     If (!$recordset_id) {
         #空
-        "`r`nNo valid recordsets with $ip for $domain. If it has been updated just now, please wait until it takes effect."
-        Exit 21
+        Error "No valid recordsets with $ip for $domain. If it has been updated just now, please wait until it takes effect." 21
     }
 }
 
 function Get-Best {
     $script:best = (Import-CSV result.csv)[0].psobject.properties.value[0]
     If (!$best) {
-        "`r`nCan not get the best Cloudflare IP"
-        Exit 31
+        Error "Can not get the best Cloudflare IP" 31
     }
-    "`r`nBest Cloudflare IP: $best"
+    "Best Cloudflare IP: $best"
     If ("$ip" -eq "$best") {
-        Exit
+        Quit
     }
+    ""
     Update-IP
 }
 
@@ -133,10 +149,10 @@ function Update-IP {
         $response
     }
     catch {
-        "`r`nRecordset: $_.Exception"
-        Exit 41
+        Error "Recordset: $_.Exception" 41
     }
 }
 
 Get-IP
-Exit
+""
+Quit

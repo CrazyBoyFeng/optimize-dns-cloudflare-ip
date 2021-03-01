@@ -6,6 +6,7 @@ account = "用户账户"
 password = "用户密码"
 
 cd `dirname $BASH_SOURCE`
+curl = `command -v curl 2> /dev/null`
 
 get_ip
 echo
@@ -45,19 +46,24 @@ function test_ipv4 {
 }
 
 function test_ipv6 {
-    cp -f ipv6.txt ip.tmp
-    echo "" >> ip.tmp
-    echo "$ip/128" >> ip.tmp
-    ./CloudflareST -p 0 -ipv6 -f ip.tmp
-    rm -f ip.tmp
+    cp -f ipv6.txt ipv6.tmp
+    echo "" >> ipv6.tmp
+    echo "$ip/128" >> ipv6.tmp
+    ./CloudflareST -p 0 -ipv6 -f ipv6.tmp
+    rm -f ipv6.tmp
 }
 
-function get_header { #登录
+function get_token { #登录
     if [ $header ] ; then #非空
         return
     fi
     local body = "{\"auth\":{\"identity\":{\"methods\":[\"password\"],\"password\":{\"user\":{\"domain\":{\"name\":\"$account\"//IAM用户所属账号名},\"name\":\"$account\",//IAM用户名\"password\":\"$password\"//IAM用户密码}}},\"scope\":{\"domain\":{\"name\":\"$account\"//IAM用户所属账号名}}}}"
-    local response = `curl -fiks -X POST -o /dev/null -H "Content-Type: application/json" -d "$body" https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true -D -`
+    local link = "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true"
+    if [ $curl ] ; then
+        response = `curl -fiks -X POST -o /dev/null -H "Content-Type: application/json" -d "$body" $link -D -`
+    else
+        response = `wget -O /dev/null -qS --body-data "$body" --header "Content-Type: application/json" --method POST --no-check-certificate $link`
+    fi
     local token = `echo $response | grep -o 'X-Subject-Token: \w*'` #截取 header
     if [ ! $token ] ; then #空
         echo "Auth as $account failed"
@@ -70,7 +76,12 @@ function get_header { #登录
 }
 
 function search_recordset_id { #查找ip对应的记录集id
-    local response=`curl -fiks -H "$headers" https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip`
+    local link = "https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip"
+    if [ $curl ] ; then
+        response = `curl -fiks -H "$headers" $link`
+    else
+        response = `wget -O- -q --header "$header" --no-check-certificate $link`
+    fi
     #recordset_id = ${recordset_id##*\"recordsets\":\[\{\"id\":\"} #bash only
     #recordset_id = ${recordset_id%%\"*} #bash only
     recordset_id = `echo "$response" | grep -o '"recordsets":\[{"id":"[^"]*' | grep -o '[^"]*$'`
@@ -82,7 +93,7 @@ function search_recordset_id { #查找ip对应的记录集id
 
 function get_best {
     #best = `sed -n 2p result.csv | grep -o '^[^,]*'`
-    best = `sed -n 2p result.csv | cut -d, -f1` #cut 效率更高
+    best = `sed -n 2p result.csv | cut -d, -f1`
     if [ ! $best ] ; then
         echo "Can not get the best Cloudflare IP"
         exit 31
@@ -95,7 +106,12 @@ function get_best {
 
 function update_ip {
     local body = "{\"records\":[\"$best\"]}"
-    local response = `curl -fiks -X PUT -H "$headers" -d "$body" https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id`
+    local link = "https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id"
+    if [ $curl ] ; then
+        response = `curl -fiks -X PUT -H "$headers" -d "$body" $link`
+    else
+        response = `wget -O- -q --header "$header" --method PUT --no-check-certificate $link`
+    fi
     if [ ! $response ] ; then
         echo "Recordset error"
         exit 41

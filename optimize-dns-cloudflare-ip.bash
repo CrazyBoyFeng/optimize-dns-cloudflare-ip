@@ -53,7 +53,7 @@ function test_ipv6 {
     rm -f ipv6.tmp
 }
 
-function get_token { #登录
+function get_header { #登录
     if [ $header ] ; then #非空
         return
     fi

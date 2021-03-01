@@ -78,7 +78,7 @@ function get_token { #登录
 function search_recordset_id { #查找ip对应的记录集id
     local link = "https://dns.myhuaweicloud.com/v2.1/recordsets?name=$domain&records=$ip"
     if [ $curl ] ; then
-        response = `curl -fiks -H "$headers" $link`
+        response = `curl -fiks -H "$header" $link`
     else
         response = `wget -O- -q --header "$header" --no-check-certificate $link`
     fi
@@ -108,9 +108,9 @@ function update_ip {
     local body = "{\"records\":[\"$best\"]}"
     local link = "https://dns.myhuaweicloud.com/v2.1/zones/$zone_id/recordsets/$recordset_id"
     if [ $curl ] ; then
-        response = `curl -fiks -X PUT -H "$headers" -d "$body" $link`
+        response = `curl -fiks -X PUT -H "$header" -d "$body" $link`
     else
-        response = `wget -O- -q --header "$header" --method PUT --no-check-certificate $link`
+        response = `wget -O- -q --method PUT --header "$header" --body-data "$body" --no-check-certificate $link`
     fi
     if [ ! $response ] ; then
         echo "Recordset error"

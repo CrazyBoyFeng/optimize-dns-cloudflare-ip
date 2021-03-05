@@ -1,5 +1,5 @@
 Param([switch]$ExitEnd,[switch]$ExitError)
-#请先去华为云解析后台增加一条A记录或AAAA记录。
+#请先去华为云解析后台增加一条A记录或AAAA记录然后填写以下参数：
 $domain = "你的域名（可以是子域名）"
 $zone_id = "域名 ID（控制台可查）"
 $account = "用户账户"
@@ -134,7 +134,7 @@ function Update-IP {
     try {
         $response = Invoke-RestMethod -Uri "https://dns.myhuaweicloud.com/v2.1/zones/$ZoneId/recordsets/$RecordsetId" -Headers $Headers -Method PUT -Body $body
         Write-Output $response | Out-File -FilePath recordset.txt
-        $response
+        Write-Host $response
     } catch {
         Write-Error $_.Exception.Message
         Exit-Error 41

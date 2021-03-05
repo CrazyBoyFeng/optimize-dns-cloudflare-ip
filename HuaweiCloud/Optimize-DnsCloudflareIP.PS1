@@ -1,10 +1,10 @@
 Param([switch]$ExitEnd,[switch]$ExitError)
 #请先去华为云解析后台增加一条A记录或AAAA记录。
 $domain = "你的域名（可以是子域名）"
-$zone_id = "域名ID（控制台可查）"
+$zone_id = "域名 ID（控制台可查）"
 $account = "用户账户"
 $password = "用户密码"
-
+#以上为需要手动填写的内容。
 Set-Location -Path $PSScriptRoot
 
 function Exit-Error {
@@ -71,10 +71,8 @@ function Get-Token {
 
 function Get-Headers {
     Param($Account,$Password)
-    If (!$headers) {
-        $token = Get-Token $Account $Password
-        $script:headers = @{"X-Auth-Token" = $token }
-    }
+    $token = Get-Token $Account $Password
+    $headers = @{"X-Auth-Token" = $token }
     Return $headers
 }
 
@@ -127,10 +125,10 @@ function Get-Best {
 }
 
 function Update-IP {
-    Param($Headers,$ZoneId,$RecordsetId,$Best)
+    Param($Headers,$ZoneId,$RecordsetId,$IP)
     $body = @"
 {
-    "records": ["$Best"]
+    "records": ["$IP"]
 }
 "@
     try {

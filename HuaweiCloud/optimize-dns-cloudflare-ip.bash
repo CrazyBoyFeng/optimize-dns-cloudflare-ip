@@ -1,10 +1,10 @@
 #!/bin/bash
 #请先去华为云解析后台增加一条A记录或AAAA记录。
 domain = "你的域名（可以是子域名）"
-zone_id = "域名ID（控制台可查）"
+zone_id = "域名 ID（控制台可查）"
 account = "用户账户"
 password = "用户密码"
-
+#以上为需要手动填写的内容。
 cd `dirname $BASH_SOURCE`
 curl = `command -v curl 2> /dev/null`
 
@@ -54,9 +54,6 @@ function test_ipv6 {
 }
 
 function get_header { #登录
-    if [ $header ] ; then #非空
-        return
-    fi
     local body = "{\"auth\":{\"identity\":{\"methods\":[\"password\"],\"password\":{\"user\":{\"domain\":{\"name\":\"$account\"//IAM用户所属账号名},\"name\":\"$account\",//IAM用户名\"password\":\"$password\"//IAM用户密码}}},\"scope\":{\"domain\":{\"name\":\"$account\"//IAM用户所属账号名}}}}"
     local link = "https://iam.myhuaweicloud.com/v3/auth/tokens?nocatalog=true"
     if [ $curl ] ; then

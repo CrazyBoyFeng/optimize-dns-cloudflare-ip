@@ -1,5 +1,5 @@
 Param([switch]$ExitEnd,[switch]$ExitError)
-#请先去 DNSPod 后台增加一条“动态 DNS 记录”然后填写以下参数：
+#请先去 DNSPod 后台增加一条A或AAAA记录然后填写以下参数：
 $sub_domain = "你的域名（可以是子域名）"
 $domain = "你的主域名"
 #以下两项从控制台生成 https://console.dnspod.cn/account_id/token
@@ -83,7 +83,7 @@ function Update-IP {
     try {
         $response = Invoke-RestMethod -Uri "https://dnsapi.cn/Record.Ddns" -Method POST -Body $body
         Write-Output $response | Out-File -FilePath record.txt
-        $response
+        Write-Host $response
     } catch {
         Write-Error $_.Exception.Message
         Exit-Error 41

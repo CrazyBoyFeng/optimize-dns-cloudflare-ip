@@ -30,7 +30,7 @@ function Get-IP {
 
 function Search-Record {
     Param($Headers,$IP)
-    $body = "$headers&keyword=$IP&length=1"
+    $body = "$Headers&keyword=$IP&length=1"
     $response = Invoke-RestMethod -Uri "https://dnsapi.cn/Record.List" -Method POST -Body $body
     $record = $response.records[0]
     If (!$record) {
@@ -79,7 +79,7 @@ function Get-Best {
 
 function Update-IP {
     Param($Headers,$RecordId,$RecordLineId,$IP)
-    $body = "$headers&record_id=$RecordId&record_line_id=$RecordLineId&value=$IP"
+    $body = "$Headers&record_id=$RecordId&record_line_id=$RecordLineId&value=$IP"
     try {
         $response = Invoke-RestMethod -Uri "https://dnsapi.cn/Record.Ddns" -Method POST -Body $body
         Write-Output $response | Out-File -FilePath record.txt

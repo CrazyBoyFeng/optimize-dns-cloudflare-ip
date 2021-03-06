@@ -23,8 +23,10 @@ _如果使用分地区按运营商线路解析功能，请注意不同线路的�
 
 如需自动定时执行，请查阅 `cron` 相关知识。
 
-# 捐赠与赞助
+<details><summary># 捐赠与赞助</summary>
 ![alipay](https://user-images.githubusercontent.com/1733254/110204402-bbcabc80-7ead-11eb-8bbc-9be2041214c2.png)
 ![wechat](https://user-images.githubusercontent.com/1733254/110204405-bd948000-7ead-11eb-9c8a-13094e252d7a.png)
 
 付款代表您同意就捐赠与赞助事项与我[约定](https://gist.github.com/CrazyBoyFeng/a53994e5cfb129110c150fb6ea802a87#file-donationandsponsorshipagreement-md)。
+</details>
+

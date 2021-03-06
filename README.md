@@ -2,8 +2,8 @@
 [CloudflareSpeedTest](https://github.com/XIU2/CloudflareSpeedTest) 脚本：查找最快 Cloudflare IP 并更新域名解析记录。
 
 ## 如何使用
-登录你的 DNS 服务商，添加你的域名的解析记录。  
-_如果使用分地区按运营商线路解析服务，请注意不同线路的初始 IP 不能重复。_
+登录你的 DNS 服务商，添加你的域名解析记录。  
+_如果使用分地区按运营商线路解析功能，请注意不同线路的初始 IP 不能重复。_
 
 ### Windows
 1. 下载脚本启动器 `Optimize-DnsCloudflareIP.Cmd` 和所用 DNS 服务商对应目录内的 `Optimize-DnsCloudflareIP.PS1` 脚本至 `CloudflareST.Exe` 所在文件夹。  
@@ -22,3 +22,9 @@ _如果使用分地区按运营商线路解析服务，请注意不同线路的�
 3. 执行 `optimize-dns-cloudflare-ip.bash`。
 
 如需自动定时执行，请查阅 `cron` 相关知识。
+
+## 捐赠与赞助
+![alipay](https://user-images.githubusercontent.com/1733254/110204402-bbcabc80-7ead-11eb-8bbc-9be2041214c2.png)
+![wechat](https://user-images.githubusercontent.com/1733254/110204405-bd948000-7ead-11eb-9c8a-13094e252d7a.png)
+
+付款代表您同意就捐赠与赞助事项与我[约定](https://gist.github.com/CrazyBoyFeng/a53994e5cfb129110c150fb6ea802a87#file-donationandsponsorshipagreement-md)。

@@ -1,5 +1,5 @@
 Param([switch]$ExitEnd,[switch]$ExitError)
-#请先去华为云解析后台增加一条A记录或AAAA记录然后填写以下参数：
+#请先去华为云解析后台增加一条 A 记录或 AAAA 记录然后填写以下参数：
 $domain = "你的域名（可以是子域名）"
 $zone_id = "域名 ID（控制台可查）"
 $account = "用户账户"

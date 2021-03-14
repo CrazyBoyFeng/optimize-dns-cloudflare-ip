@@ -1,5 +1,5 @@
 Param([switch]$ExitEnd,[switch]$ExitError)
-#请先去 DNSPod 后台增加一条A或AAAA记录然后填写以下参数：
+#请先去 DNSPod 后台增加一条 A 或 AAAA 记录然后填写以下参数：
 $sub_domain = "你的域名（可以是子域名）"
 $domain = "你的主域名"
 #以下两项从控制台生成 https://console.dnspod.cn/account_id/token

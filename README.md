@@ -10,9 +10,9 @@ _如果使用分地区按运营商线路解析功能，请注意不同线路的�
 ### Windows
 1. 下载脚本启动器 `Optimize-DnsCloudflareIP.Cmd` 和所用 DNS 服务提供商对应目录内的 `Optimize-DnsCloudflareIP.PS1` 脚本至 `CloudflareST.Exe` 所在文件夹。  
 2. 修改 `Optimize-DnsCloudflareIP.PS1`，按要求填写参数。
-3. 执行 `Optimize-DnsCloudflareIP.Cmd`。默认常规窗口模式，结束后暂停。可通过参数调整启动器：
-* `Minimized` 最小化窗口模式。仅错误时暂停。
-* `Hidden` 隐藏窗口模式。结束后退出。可通过退出码判断执行结果。
+3. 执行 `Optimize-DnsCloudflareIP.Cmd`。默认常规窗口模式。结束后暂停。可通过参数调整启动器：
+* `Optimize-DnsCloudflareIP.Cmd Minimized` 最小化窗口模式。仅错误时暂停。
+* `Optimize-DnsCloudflareIP.Cmd Hidden` 隐藏窗口模式。结束后退出。可通过退出码判断执行结果。
 
 如需自动定时执行，请查阅任务计划相关知识。
 

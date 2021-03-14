@@ -1,4 +1,3 @@
-Param([switch]$ExitEnd,[switch]$ExitError)
 #请先去 DNSPod 后台增加一条 A 或 AAAA 记录然后填写以下参数：
 $sub_domain = "你的域名（可以是子域名）"
 $domain = "你的主域名"
@@ -8,21 +7,13 @@ $token = "Token"
 #以上为需要手动填写的内容。
 Set-Location -Path $PSScriptRoot
 
-function Exit-Error {
-    Param ($Code)
-    If (!$ExitError) {
-        Pause
-    }
-    Exit $Code
-}
-
 function Get-IP {
     Param($SubDomain)
     Write-Host "Domain name: $SubDomain"
     $ip = [System.Net.Dns]::GetHostAddresses($SubDomain)[0].IPAddressToString
     If (!$ip) {
         Write-Error "Can not get the IP of $SubDomain"
-        Exit-Error 1
+        Exit 1
     }
     Write-Host "Current IP: $ip"
     Return $ip
@@ -35,7 +26,7 @@ function Search-Record {
     $record = $response.records[0]
     If (!$record) {
         Write-Error "No valid records with $IP. If it has been updated just now, please wait until it takes effect."
-        Exit-Error 21
+        Exit 21
     }
     Return $record.id,$record.line_id
 }
@@ -56,23 +47,16 @@ function Test-IPv6 {
     Remove-Item ip.tmp
 }
 
-function Exit-End {
-    If (!$ExitEnd) {
-        Pause
-    }
-    Exit
-}
-
 function Get-Best {
     Param($IP)
     $best = (Import-CSV result.csv)[0].psobject.properties.value[0]
     If (!$best) {
         Write-Error "Can not get the best Cloudflare IP"
-        Exit-Error 31
+        Exit 31
     }
     Write-Host "Best Cloudflare IP: $best"
     If ("$IP" -Eq "$best") {
-        Exit-End
+        Exit
     }
     Return $best
 }
@@ -86,9 +70,9 @@ function Update-IP {
         Write-Host $response
     } catch {
         Write-Error $_.Exception.Message
-        Exit-Error 41
+        Exit 41
     }
-    Exit-End
+    Exit
 }
 
 $ip = Get-IP $sub_domain

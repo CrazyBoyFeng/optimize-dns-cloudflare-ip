@@ -1,4 +1,3 @@
-Param([switch]$ExitEnd,[switch]$ExitError)
 #请先去华为云解析后台增加一条 A 记录或 AAAA 记录然后填写以下参数：
 $domain = "你的域名（可以是子域名）"
 $zone_id = "域名 ID（控制台可查）"
@@ -7,21 +6,13 @@ $password = "用户密码"
 #以上为需要手动填写的内容。
 Set-Location -Path $PSScriptRoot
 
-function Exit-Error {
-    Param ($Code)
-    If (!$ExitError) {
-        Pause
-    }
-    Exit $Code
-}
-
 function Get-IP {
     Param($Domain)
     Write-Host "Domain name: $Domain"
     $ip = [System.Net.Dns]::GetHostAddresses($Domain)[0].IPAddressToString
     If (!$ip) {
         Write-Error "Can not get the IP of $Domain"
-        Exit-Error 1
+        Exit 1
     }
     Write-Host "Current IP: $ip"
     Return $ip
@@ -59,13 +50,13 @@ function Get-Token {
         $token = $response.Headers["X-Subject-Token"]
         If (!$token) {
             Write-Error "Auth as $Account failed"
-            Exit-Error 11
+            Exit 11
         }
         Write-Host "Auth as $Account successful"
         Return $token
     } Catch {
         Write-Error $_.Exception.Message
-        Exit-Error 12
+        Exit 12
     }
 }
 
@@ -82,7 +73,7 @@ function Search-RecordsetId {
     $recordset_id = $response.recordsets[0].id
     If (!$recordset_id) {
         Write-Error "No valid recordsets with $IP for $Domain. If it has been updated just now, please wait until it takes effect."
-        Exit-Error 21
+        Exit 21
     }
     Return $recordset_id
 }
@@ -103,23 +94,16 @@ function Test-IPv6 {
     Remove-Item ip.tmp
 }
 
-function Exit-End {
-    If (!$ExitEnd) {
-        Pause
-    }
-    Exit
-}
-
 function Get-Best {
     Param($IP)
     $best = (Import-CSV result.csv)[0].psobject.properties.value[0]
     If (!$best) {
         Write-Error "Can not get the best Cloudflare IP"
-        Exit-Error 31
+        Exit 31
     }
     Write-Host "Best Cloudflare IP: $best"
     If ("$IP" -Eq "$best") {
-        Exit-End
+        Exit
     }
     Return $best
 }
@@ -137,9 +121,9 @@ function Update-IP {
         Write-Host $response
     } catch {
         Write-Error $_.Exception.Message
-        Exit-Error 41
+        Exit 41
     }
-    Exit-End
+    Exit
 }
 
 $ip = Get-IP $domain

@@ -17,7 +17,7 @@ function get_ip {
     fi
     echo "Domain name: $cname"
     ip=`ping -c 1 $cname | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
-    if [ ! $ip ]; then
+    if [ ! $ip ] ; then
         echo "Can not get the IP of $cname"
         exit 1
     fi
@@ -77,7 +77,7 @@ function update_ip {
     if [ $curl ] ; then
         response=`curl -fiks -X POST -d "$body" $link`
     else
-        response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link
+        response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link`
     fi
     if [ ! $response ] ; then
         echo "Record error"

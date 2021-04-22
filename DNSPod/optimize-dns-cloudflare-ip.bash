@@ -1,6 +1,6 @@
 #!/bin/bash
 #请先去 DNSPod 后台增加一条A记录或AAAA记录然后填写以下参数：
-sub_domain = "你的域名（可以是子域名）"
+sub_domain = "你的主机记录（不含主域名部分）若只有主域名则删除或留空"
 domain = "你的主域名"
 #以下两项从控制台生成 https://console.dnspod.cn/account_id/token
 account_id = "ID"
@@ -10,10 +10,14 @@ cd `dirname $BASH_SOURCE`
 curl = `command -v curl 2> /dev/null`
 
 function get_ip {
-    echo "Domain name: $sub_domain"
-    ip=`ping -c 1 $sub_domain | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
+    host = $domain
+    if [ $sub_domain ] ; then
+        host = "$sub_domain.$domain"
+    fi
+    echo "Domain name: $host"
+    ip=`ping -c 1 $host | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ]; then
-        echo "Can not get the IP of $sub_domain"
+        echo "Can not get the IP of $host"
         exit 1
     fi
     echo "Current IP: $ip"
@@ -48,7 +52,7 @@ function search_record { #查找ip对应的记录集id
     record_id = `echo "$response" | grep -o '"records":\[{"id":"[^"]*' | grep -o '[^"]*$'`
     record_line_id = `echo "$response" | grep -o '"line_id":"[^"]*' | grep -o '[^"]*$'`
     if [ ! $recordset_id ] ; then #空
-        echo "No valid records with $ip for $sub_domain. If it has been updated just now, please wait until it takes effect"
+        echo "No valid records with $ip. If it has been updated just now, please wait until it takes effect."
         exit 21
     fi
 }
@@ -84,7 +88,10 @@ function update_ip {
 }
 
 get_ip
-headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain&sub_domian=$sub_domain"
+headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain"
+if [ $sub_domain ] ; then
+    headers = "$headers&sub_domain=$sub_domain"
+fi
 echo
 search_record
 case $ip in 

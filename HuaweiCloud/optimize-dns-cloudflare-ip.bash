@@ -41,7 +41,7 @@ function test_ipv4 {
     cp -f ip.txt ip.tmp
     echo "" >> ip.tmp
     echo "$ip/32" >> ip.tmp
-    ./CloudflareST.exe -tl 500 -sl 0.1 -p 0 -f ip.tmp
+    ./CloudflareST -tl 500 -sl 0.1 -p 0 -f ip.tmp
     rm -f ip.tmp
 }
 

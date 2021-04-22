@@ -46,7 +46,7 @@ function search_record { #查找ip对应的记录集id
     if [ $curl ] ; then
         response=`curl -fiks -X POST -d "$body" $link`
     else
-        response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link
+        response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link`
     fi
     #records=${recordset_id##*\"records\":\[\{\"id\":\"} #bash only
     #record_id=${records%%\"*} #bash only

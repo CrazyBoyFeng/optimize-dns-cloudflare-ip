@@ -1,5 +1,5 @@
 #请先去 DNSPod 后台增加一条 A 或 AAAA 记录然后填写以下参数：
-$sub_domain = "你的域名（可以是子域名）"
+$sub_domain = "你的主机记录（不含主域名部分）若只有主域名则留空或删除该参数"
 $domain = "你的主域名"
 #以下两项从控制台生成 https://console.dnspod.cn/account_id/token
 $account_id = "ID"
@@ -8,11 +8,16 @@ $token = "Token"
 Set-Location -Path $PSScriptRoot
 
 function Get-IP {
-    Param($SubDomain)
-    Write-Host "Domain name: $SubDomain"
-    $ip = [System.Net.Dns]::GetHostAddresses($SubDomain)[0].IPAddressToString
+    Param($Domain,$SubDomain)
+    If ($sub_domain) {
+        $cname = "$SubDomain.$Domain"
+    } Else {
+        $cname = $Domain
+    }
+    Write-Host "Domain name: $cname"
+    $ip = [System.Net.Dns]::GetHostAddresses($cname)[0].IPAddressToString
     If (!$ip) {
-        Write-Error "Can not get the IP of $SubDomain"
+        Write-Error "Can not get the IP of $cname"
         Exit 1
     }
     Write-Host "Current IP: $ip"
@@ -76,7 +81,10 @@ function Update-IP {
 }
 
 $ip = Get-IP $sub_domain
-$headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain&sub_domain=$sub_domain"
+$headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain"
+if ($sub_domain) {
+    $headers = "$headers&sub_domain=$sub_domain"
+}
 Write-Host ""
 $record_id,$record_line_id = Search-Record $headers $ip
 If ($ip.Contains(".")) {

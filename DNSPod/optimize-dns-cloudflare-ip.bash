@@ -1,6 +1,6 @@
 #!/bin/bash
 #请先去 DNSPod 后台增加一条A记录或AAAA记录然后填写以下参数：
-sub_domain = "你的主机记录（不含主域名部分）若只有主域名则删除或留空"
+sub_domain = "你的主机记录（不含主域名部分）若只有主域名则留空或删除该参数"
 domain = "你的主域名"
 #以下两项从控制台生成 https://console.dnspod.cn/account_id/token
 account_id = "ID"
@@ -10,14 +10,15 @@ cd `dirname $BASH_SOURCE`
 curl = `command -v curl 2> /dev/null`
 
 function get_ip {
-    host = $domain
     if [ $sub_domain ] ; then
-        host = "$sub_domain.$domain"
+        cname = "$sub_domain.$domain"
+    else
+        cname = $domain
     fi
-    echo "Domain name: $host"
-    ip=`ping -c 1 $host | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
+    echo "Domain name: $cname"
+    ip=`ping -c 1 $cname | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ]; then
-        echo "Can not get the IP of $host"
+        echo "Can not get the IP of $cname"
         exit 1
     fi
     echo "Current IP: $ip"

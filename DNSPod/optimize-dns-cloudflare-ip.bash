@@ -1,19 +1,19 @@
 #!/bin/bash
 #请先去 DNSPod 后台增加一条A记录或AAAA记录然后填写以下参数：
-sub_domain = "你的主机记录（不含主域名部分）若只有主域名则留空或删除该参数"
-domain = "你的主域名"
+sub_domain="你的主机记录（不含主域名部分）若只有主域名则留空或删除该参数"
+domain="你的主域名"
 #以下两项从控制台生成 https://console.dnspod.cn/account_id/token
-account_id = "ID"
-token = "Token"
+account_id="ID"
+token="Token"
 #以上为需要手动填写的内容。
 cd `dirname $BASH_SOURCE`
-curl = `command -v curl 2> /dev/null`
+curl=`command -v curl 2> /dev/null`
 
 function get_ip {
     if [ $sub_domain ] ; then
-        cname = "$sub_domain.$domain"
+        cname="$sub_domain.$domain"
     else
-        cname = $domain
+        cname=$domain
     fi
     echo "Domain name: $cname"
     ip=`ping -c 1 $cname | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
@@ -41,17 +41,17 @@ function test_ipv6 {
 }
 
 function search_record { #查找ip对应的记录集id
-    local link = "https://dnsapi.cn/Record.List"
-    local body = "$headers&keyword=$IP&length=1"
+    local link="https://dnsapi.cn/Record.List"
+    local body="$headers&keyword=$IP&length=1"
     if [ $curl ] ; then
-        response = `curl -fiks -X POST -d "$body" $link`
+        response=`curl -fiks -X POST -d "$body" $link`
     else
-        response = `wget -O- -q --method POST --body-data "$body" --no-check-certificate $link
+        response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link
     fi
-    #records = ${recordset_id##*\"records\":\[\{\"id\":\"} #bash only
-    #record_id = ${records%%\"*} #bash only
-    record_id = `echo "$response" | grep -o '"records":\[{"id":"[^"]*' | grep -o '[^"]*$'`
-    record_line_id = `echo "$response" | grep -o '"line_id":"[^"]*' | grep -o '[^"]*$'`
+    #records=${recordset_id##*\"records\":\[\{\"id\":\"} #bash only
+    #record_id=${records%%\"*} #bash only
+    record_id=`echo "$response" | grep -o '"records":\[{"id":"[^"]*' | grep -o '[^"]*$'`
+    record_line_id=`echo "$response" | grep -o '"line_id":"[^"]*' | grep -o '[^"]*$'`
     if [ ! $recordset_id ] ; then #空
         echo "No valid records with $ip. If it has been updated just now, please wait until it takes effect."
         exit 21
@@ -59,8 +59,8 @@ function search_record { #查找ip对应的记录集id
 }
 
 function get_best {
-    #best = `sed -n 2p result.csv | grep -o '^[^,]*'`
-    best = `sed -n 2p result.csv | cut -d, -f1`
+    #best=`sed -n 2p result.csv | grep -o '^[^,]*'`
+    best=`sed -n 2p result.csv | cut -d, -f1`
     if [ ! $best ] ; then
         echo "Can not get the best Cloudflare IP"
         exit 31
@@ -72,12 +72,12 @@ function get_best {
 }
 
 function update_ip {
-    local body = "$headers&record_id=$record_id&record_line_id=$record_line_id&value=$best"
-    local link = "https://dnsapi.cn/Record.Ddns"
+    local body="$headers&record_id=$record_id&record_line_id=$record_line_id&value=$best"
+    local link="https://dnsapi.cn/Record.Ddns"
     if [ $curl ] ; then
-        response = `curl -fiks -X POST -d "$body" $link`
+        response=`curl -fiks -X POST -d "$body" $link`
     else
-        response = `wget -O- -q --method POST --body-data "$body" --no-check-certificate $link
+        response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link
     fi
     if [ ! $response ] ; then
         echo "Record error"
@@ -89,9 +89,9 @@ function update_ip {
 }
 
 get_ip
-headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain"
+headers="login_token=$account_id,$token&lang=cn&format=json&domain=$domain"
 if [ $sub_domain ] ; then
-    headers = "$headers&sub_domain=$sub_domain"
+    headers="$headers&sub_domain=$sub_domain"
 fi
 echo
 search_record

@@ -9,24 +9,6 @@ token = "Token"
 cd `dirname $BASH_SOURCE`
 curl = `command -v curl 2> /dev/null`
 
-get_ip
-headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain&sub_domian=$sub_domain"
-echo
-search_record
-case $ip in 
-*"."*)
-    test_ipv4;;
-*":"*)
-    test_ipv6;;
-*)
-    exit 2;;
-esac
-echo
-get_best
-echo
-update_ip
-exit
-
 function get_ip {
     echo "Domain name: $sub_domain"
     ip=`ping -c 1 $sub_domain | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
@@ -100,3 +82,21 @@ function update_ip {
     echo "$response" > record.json
     echo "Record OK"
 }
+
+get_ip
+headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain&sub_domian=$sub_domain"
+echo
+search_record
+case $ip in 
+*"."*)
+    test_ipv4;;
+*":"*)
+    test_ipv6;;
+*)
+    exit 2;;
+esac
+echo
+get_best
+echo
+update_ip
+exit

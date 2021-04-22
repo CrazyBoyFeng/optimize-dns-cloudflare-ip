@@ -8,25 +8,6 @@ password = "用户密码"
 cd `dirname $BASH_SOURCE`
 curl = `command -v curl 2> /dev/null`
 
-get_ip
-echo
-get_header
-echo
-search_recordset_id
-case $ip in 
-*"."*)
-    test_ipv4;;
-*":"*)
-    test_ipv6;;
-*)
-    exit 2;;
-esac
-echo
-get_best
-echo
-update_ip
-exit
-
 function get_ip {
     echo "Domain name: $domain"
     ip=`ping -c 1 $domain | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
@@ -117,3 +98,22 @@ function update_ip {
     echo "$response" > recordset.json
     echo "Recordset OK"
 }
+
+get_ip
+echo
+get_header
+echo
+search_recordset_id
+case $ip in 
+*"."*)
+    test_ipv4;;
+*":"*)
+    test_ipv6;;
+*)
+    exit 2;;
+esac
+echo
+get_best
+echo
+update_ip
+exit

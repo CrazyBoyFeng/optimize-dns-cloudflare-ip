@@ -79,7 +79,7 @@ function update_ip {
     else
         response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link`
     fi
-    if [ ! $response ] ; then
+    if [ ! "$response" ] ; then
         echo "Update error"
         exit 41
     fi

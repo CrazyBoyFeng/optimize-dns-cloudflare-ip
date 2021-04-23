@@ -90,7 +90,7 @@ function update_ip {
     else
         response=`wget -O- -q --method PUT --header "$header" --body-data "$body" --no-check-certificate $link`
     fi
-    if [ ! $response ] ; then
+    if [ ! "$response" ] ; then
         echo "Recordset error"
         exit 41
     fi

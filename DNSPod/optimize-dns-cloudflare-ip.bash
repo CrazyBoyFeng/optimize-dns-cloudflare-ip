@@ -52,7 +52,7 @@ function search_record { #查找ip对应的记录集id
     #record_id=${records%%\"*} #bash only
     record_id=`echo "$response" | grep -o '"records":\[{"id":"[^"]*' | grep -o '[^"]*$'`
     record_line_id=`echo "$response" | grep -o '"line_id":"[^"]*' | grep -o '[^"]*$'`
-    if [ ! $recordset_id ] ; then #空
+    if [ ! $record_id ] ; then #空
         echo "No valid records with $ip. If it has been updated just now, please wait until it takes effect."
         exit 21
     fi

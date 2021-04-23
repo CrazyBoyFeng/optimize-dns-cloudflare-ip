@@ -10,7 +10,7 @@ curl=`command -v curl 2> /dev/null`
 
 function get_ip {
     echo "Domain name: $domain"
-    ip=`ping -c 1 $domain | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
+    ip=`ping -c 1 $domain | head -1 | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ]; then
         echo "Can not get the IP of $domain"
         exit 1

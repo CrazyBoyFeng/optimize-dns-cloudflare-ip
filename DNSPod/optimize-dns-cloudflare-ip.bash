@@ -16,7 +16,7 @@ function get_ip {
         cname=$domain
     fi
     echo "Domain name: $cname"
-    ip=`ping -c 1 $cname | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
+    ip=`ping -c 1 $cname | head -1 | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ] ; then
         echo "Can not get the IP of $cname"
         exit 1

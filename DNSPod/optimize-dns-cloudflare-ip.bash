@@ -80,12 +80,12 @@ function update_ip {
         response=`wget -O- -q --method POST --body-data "$body" --no-check-certificate $link`
     fi
     if [ ! $response ] ; then
-        echo "Record error"
+        echo "Update error"
         exit 41
     fi
     rm -f record.json
     echo "$response" > record.json
-    echo "Record completed"
+    echo "$response" | grep -o '"message":"[^"]*' | grep -o '[^"]*$'
 }
 
 get_ip

@@ -11,14 +11,14 @@ curl=`command -v curl 2> /dev/null`
 
 function get_ip {
     if [ $sub_domain ] ; then
-        cname="$sub_domain.$domain"
+        name="$sub_domain.$domain"
     else
-        cname=$domain
+        name=$domain
     fi
-    echo "Domain name: $cname"
-    ip=`ping -c 1 $cname | head -1 | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
+    echo "Domain name: $name"
+    ip=`ping -c 1 $name | head -1 | grep -o ' ([^)]*' | grep -o '[^ (]*$'`
     if [ ! $ip ] ; then
-        echo "Can not get the IP of $cname"
+        echo "Can not get the IP of $name"
         exit 1
     fi
     echo "Current IP: $ip"
@@ -85,14 +85,16 @@ function update_ip {
     fi
     rm -f record.json
     echo "$response" > record.json
-    echo "Record OK"
+    echo "Record completed"
 }
 
 get_ip
-headers="login_token=$account_id,$token&lang=cn&format=json&domain=$domain"
 if [ $sub_domain ] ; then
-    headers="$headers&sub_domain=$sub_domain"
+    rr=$sub_domain
+else
+    rr="@"
 fi
+headers="login_token=$account_id,$token&lang=cn&format=json&domain=$domain&sub_domain=$rr"
 echo
 search_record
 case $ip in 

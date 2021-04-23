@@ -10,14 +10,14 @@ Set-Location -Path $PSScriptRoot
 function Get-IP {
     Param($Domain,$SubDomain)
     If ($sub_domain) {
-        $cname = "$SubDomain.$Domain"
+        $name = "$SubDomain.$Domain"
     } Else {
-        $cname = $Domain
+        $name = $Domain
     }
-    Write-Host "Domain name: $cname"
-    $ip = [System.Net.Dns]::GetHostAddresses($cname)[0].IPAddressToString
+    Write-Host "Domain name: $name"
+    $ip = [System.Net.Dns]::GetHostAddresses($name)[0].IPAddressToString
     If (!$ip) {
-        Write-Error "Can not get the IP of $cname"
+        Write-Error "Can not get the IP of $name"
         Exit 1
     }
     Write-Host "Current IP: $ip"
@@ -80,11 +80,13 @@ function Update-IP {
     Exit
 }
 
-$ip = Get-IP $sub_domain
-$headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain"
+$ip = Get-IP $domain $sub_domain
 if ($sub_domain) {
-    $headers = "$headers&sub_domain=$sub_domain"
+    $rr = $sub_domain
+} Else {
+    $rr = "@"
 }
+$headers = "login_token=$account_id,$token&lang=cn&format=json&domain=$domain&sub_domain=$rr"
 Write-Host ""
 $record_id,$record_line_id = Search-Record $headers $ip
 If ($ip.Contains(".")) {

@@ -6,6 +6,7 @@ $account_id = "ID"
 $token = "Token"
 #以上为需要手动填写的内容。
 Set-Location -Path $PSScriptRoot
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 function Get-IP {
     Param($Domain,$SubDomain)

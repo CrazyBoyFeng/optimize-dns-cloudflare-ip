@@ -5,6 +5,7 @@ $account = "用户账户"
 $password = "用户密码"
 #以上为需要手动填写的内容。
 Set-Location -Path $PSScriptRoot
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 function Get-IP {
     Param($Domain)
